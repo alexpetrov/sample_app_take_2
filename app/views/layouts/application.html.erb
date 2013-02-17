@@ -9,6 +9,7 @@
   </head>
   <body>
     <%= render 'layouts/header' %>
+<!--
     <header class="navbar navbar-fixed-top navbar-inverse">
       <div class="navbar-inner">
         <div class="container">
@@ -17,15 +18,16 @@
             <ul class="nav pull-right">
               <li><%= link_to "Home",    '#' %></li>
               <li><%= link_to "Help",    '#' %></li>
-              <li><%= link_to "Sign in", '#' %></li>
+              <li><%= link_to "Sign in", signin_path %></li>
             </ul>
           </nav>
         </div>
       </div>
     </header>
+-->
     <div class="container">
       <% flash.each do |key, value| %>
-        <div class="alert alert-<%= key %>"><%= value %></div>
+        <%= content_tag(:div, value, class: "alert alert-#{key}") %>
       <% end %>
       <%= yield %>
       <%= render 'layouts/footer' %>
