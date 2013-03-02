@@ -115,4 +115,19 @@ describe "Authentication" do
     end
 
   end
+  describe "signed in user" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { sign_in user }
+
+    describe "should be redirected to root from new" do
+      before { get new_user_path }
+      it { response.should redirect_to(root_path) }
+    end
+
+    describe "should be redirected to root from create" do
+      before { post users_path }
+      it { response.should redirect_to(root_path) }
+    end
+  end
+
 end
