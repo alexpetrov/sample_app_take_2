@@ -24,6 +24,8 @@ class User < ActiveRecord::Base
   before_save { self.email.downcase! }
   before_save :create_remember_token
 
+  self.per_page = 10
+
   def feed
     Micropost.where("user_id = ?", id)
   end

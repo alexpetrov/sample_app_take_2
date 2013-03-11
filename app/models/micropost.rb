@@ -6,4 +6,6 @@ class Micropost < ActiveRecord::Base
   validates :user_id, presence: true
 
   default_scope order: 'microposts.created_at DESC'
+
+  self.per_page = 10
 end

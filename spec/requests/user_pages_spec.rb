@@ -4,6 +4,78 @@ describe "User pages" do
 
   subject { page }
 
+  describe "profile page" do
+    let(:user) { FactoryGirl.create(:user) }
+    let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+    let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+
+    before { visit user_path(user) }
+    
+    it { should have_selector('h1', text: user.name) }
+    it { should have_selector('title', text: user.name) }
+
+    describe "microposts" do
+      it { should have_content(m1.content) }
+      it { should have_content(m2.content) }
+      it { should have_content(user.microposts.count) }
+    end 
+  end
+
+  describe "root page" do
+    let(:user) { FactoryGirl.create(:user) }
+
+    before(:each) do
+      sign_in user
+      visit root_path
+    end
+
+    describe "microposts pagination" do
+      before(:all) do 
+        11.times do 
+          FactoryGirl.create(:micropost, user: user, content: "content") 
+        end
+      end
+
+      after(:all) { user.microposts.delete_all }
+      
+      describe "should have div.pagination" do
+        it { should have_selector('div.pagination') }
+      end
+
+      it "should list each post" do
+        user.microposts.paginate(page: 1).each do |micropost|
+          page.should have_selector('li', text: micropost.content)
+        end
+      end
+    end
+
+    describe "sidebar" do
+
+      describe "should show micropost word in singular" do
+        let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+        before { visit root_path }
+        it { should have_selector('h1', text: user.name) }
+        it { should have_content("1 micropost") }
+      end
+
+      describe "should show microposts word in plural" do
+        let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+        let!(:m3) { FactoryGirl.create(:micropost, user: user, content: "Bar bar") }
+        before { visit root_path }
+        it { should have_content("2 microposts") }
+      end
+
+      describe "should show microposts count" do
+        let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Barb") }
+        let!(:m3) { FactoryGirl.create(:micropost, user: user, content: "Barn") }
+        let!(:m3) { FactoryGirl.create(:micropost, user: user, content: "Bard") }
+        before { visit root_path }
+        it { should have_content(user.microposts.count) }
+      end
+    end
+
+  end
+
   describe "index" do
     
     let(:user) { FactoryGirl.create(:user) }
@@ -18,7 +90,8 @@ describe "User pages" do
     
     describe "pagination" do
       
-      before(:all) { 30.times { FactoryGirl.create(:user) } }
+      before(:all) { 10.times { FactoryGirl.create(:user) } }
+
       after(:all) { User.delete_all }
       
       it { should have_selector('div.pagination') }
@@ -63,22 +136,6 @@ describe "User pages" do
     it { should have_selector('title', text: full_title('Sign up')) }
   end
 
-  describe "profile page" do
-    let(:user) { FactoryGirl.create(:user) }
-    let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
-    let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
-
-    before { visit user_path(user) }
-    
-    it { should have_selector('h1', text: user.name) }
-    it { should have_selector('title', text: user.name) }
-
-    describe "microposts" do
-      it { should have_content(m1.content) }
-      it { should have_content(m2.content) }
-      it { should have_content(user.microposts.count) }
-    end 
-  end
 
   describe "signup" do
 
