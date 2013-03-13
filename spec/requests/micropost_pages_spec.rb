@@ -43,4 +43,16 @@ describe "Micropost pages" do
       end
     end
   end
+
+  describe "delete link" do
+    let!(:another_user) { FactoryGirl.create(:user, email: "another_user@example.com") }
+    before do
+      FactoryGirl.create(:micropost, user: another_user) 
+      visit user_path(another_user)
+    end
+    
+    describe "should not appear for another users microposts" do
+      it { should_not have_content('delete') }
+    end
+  end
 end
