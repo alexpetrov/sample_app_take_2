@@ -1,0 +1,13 @@
+<% followers = @followers %>
+<% followers = @following %>
+    <section>
+      <%= render 'shared/stats' %>
+      <% if followers.any? %>
+      Followers:
+      <% end %>
+      <%= render 'shared/related_users_avatars', users: followers, label: "Followers" %>
+      <% if following.any? %>
+      Following:
+      <% end %>
+      <%= render 'shared/related_users_avatars', users: following, label: "Following" %>
+    </section>
