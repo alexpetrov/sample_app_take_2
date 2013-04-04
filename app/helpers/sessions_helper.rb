@@ -12,10 +12,19 @@ module SessionsHelper
 
   def current_user=(user)
     @current_user = user
+
   end
 
   def current_user
     @current_user ||= User.find_by_remember_token(cookies[:remember_token])
+  end
+
+  def current_user_followers
+    current_user.followers.paginate(page: params[:page])
+  end
+
+  def current_user_followed_users
+    current_user.followers.paginate(page: params[:page])
   end
 
   def signed_in?

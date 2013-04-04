@@ -1,3 +1,5 @@
+<% @followers ||= current_user_followers %>
+<% @following ||= current_user_followed_users %>
 <%= render 'shared/stats' %>
 <%= render 'shared/related_users_avatars', users: @followers, label: "Followers:" %>
 <%= render 'shared/related_users_avatars', users: @following, label: "Following:" %>
