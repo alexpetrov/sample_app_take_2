@@ -44,5 +44,6 @@ namespace :db do
     followers =      users[3..40]
     followed_users.each { |followed| user.follow!(followed); print "." }
     followers.each      { |follower| follower.follow!(user); print "." }
+    puts "\n"
   end
 end
