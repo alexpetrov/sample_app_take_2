@@ -19,5 +19,8 @@
 .#*
 *.stamp
 
+# exuberant tags
+TAGS
+
 #clowd9
 .c9revisions
