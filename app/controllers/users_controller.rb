@@ -4,25 +4,30 @@ class UsersController < ApplicationController
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: [:destroy]
   before_filter :prevent_admin_from_delete_himself, only: [:destroy]
-  before_filter :prevent_new_and_create_from_signed_in_user, only: [:create, :new]
+  before_filter :prevent_new_and_create_from_signed_in_user,
+                only: [:create, :new]
 
   def index
-    @users = User.paginate(page: params[:page])
+    current_page = User.paginate(page: params[:page])
+    @users = current_page.decorate
   end
 
   def show
-    @user = User.find(params[:id])
+    @user = User.find(params[:id]).decorate
     @microposts = @user.microposts.paginate(page: params[:page])
-    @following = @user.followed_users.paginate(page: params[:page])
-    @followers = @user.followers.paginate(page: params[:page])
+    following_current_page = @user.followed_users.paginate(page: params[:page])
+    @following = following_current_page.decorate
+    followers_current_page = @user.followers.paginate(page: params[:page])
+    @followers = followers_current_page.decorate
+    @user = @user.decorate
   end
 
   def new
-    @user = User.new
+    @user = User.new.decorate
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(params[:user]).decorate
     if @user.save
       sign_in @user
       flash[:success] = 'Welcome to the Sample App!'
@@ -53,22 +58,24 @@ class UsersController < ApplicationController
 
   def following
     @title = 'Following'
-    @user = User.find(params[:id])
-    @users = @user.followed_users.paginate(page: params[:page])
+    @user = User.find(params[:id]).decorate
+    current_page = @user.followed_users.paginate(page: params[:page])
+    @users = current_page.decorate
     render 'show_follow'
   end
 
   def followers
     @title = 'Followers'
-    @user = User.find(params[:id])
-    @users = @user.followers.paginate(page: params[:page])
+    @user = User.find(params[:id]).decorate
+    current_page = @user.followers.paginate(page: params[:page])
+    @users = current_page.decorate
     render 'show_follow'
   end
 
   private
 
   def correct_user
-    @user = User.find(params[:id])
+    @user = User.find(params[:id]).decorate
     redirect_to root_path unless current_user?(@user)
   end
 
@@ -77,7 +84,7 @@ class UsersController < ApplicationController
   end
 
   def prevent_admin_from_delete_himself
-    redirect_to root_path if User.find(params[:id]) == current_user
+    redirect_to root_path if User.find(params[:id]).decorate == current_user
   end
 
   def prevent_new_and_create_from_signed_in_user
