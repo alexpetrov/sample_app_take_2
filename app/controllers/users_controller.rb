@@ -7,27 +7,25 @@ class UsersController < ApplicationController
   before_filter :prevent_new_and_create_from_signed_in_user,
                 only: [:create, :new]
 
+  decorates_assigned :user
+
   def index
-    current_page = User.paginate(page: params[:page])
-    @users = current_page.decorate
+    @users = User.paginate(page: params[:page])
   end
 
   def show
-    @user = User.find(params[:id]).decorate
+    @user = User.find(params[:id])
     @microposts = @user.microposts.paginate(page: params[:page])
-    following_current_page = @user.followed_users.paginate(page: params[:page])
-    @following = following_current_page.decorate
-    followers_current_page = @user.followers.paginate(page: params[:page])
-    @followers = followers_current_page.decorate
-    @user = @user.decorate
+    @following = @user.followed_users.paginate(page: params[:page])
+    @followers = @user.followers.paginate(page: params[:page])
   end
 
   def new
-    @user = User.new.decorate
+    @user = User.new
   end
 
   def create
-    @user = User.new(params[:user]).decorate
+    @user = User.new(params[:user])
     if @user.save
       sign_in @user
       flash[:success] = 'Welcome to the Sample App!'
@@ -58,24 +56,22 @@ class UsersController < ApplicationController
 
   def following
     @title = 'Following'
-    @user = User.find(params[:id]).decorate
-    current_page = @user.followed_users.paginate(page: params[:page])
-    @users = current_page.decorate
+    @user = User.find(params[:id])
+    @users = @user.followed_users.paginate(page: params[:page])
     render 'show_follow'
   end
 
   def followers
     @title = 'Followers'
-    @user = User.find(params[:id]).decorate
-    current_page = @user.followers.paginate(page: params[:page])
-    @users = current_page.decorate
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
     render 'show_follow'
   end
 
   private
 
   def correct_user
-    @user = User.find(params[:id]).decorate
+    @user = User.find(params[:id])
     redirect_to root_path unless current_user?(@user)
   end
 
@@ -84,7 +80,7 @@ class UsersController < ApplicationController
   end
 
   def prevent_admin_from_delete_himself
-    redirect_to root_path if User.find(params[:id]).decorate == current_user
+    redirect_to root_path if User.find(params[:id]) == current_user
   end
 
   def prevent_new_and_create_from_signed_in_user
